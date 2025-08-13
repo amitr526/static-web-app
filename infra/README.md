@@ -1,0 +1,1 @@
+https://github.com/Azure/azure-quickstart-templates/blob/master/quickstarts/microsoft.documentdb/cosmosdb-sql-serverless/main.bicep

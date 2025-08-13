@@ -1,0 +1,10 @@
+##################################################################
+# VS Code with REST Client extension is needed to use this file.
+# Download at: https://aka.ms/vscode/rest-client
+##################################################################
+
+@api_host = http://localhost:7071
+
+### Generate an embedding from a text
+GET {{api_host}}/api/message
+Content-Type: application/json
