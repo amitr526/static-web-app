@@ -1,5 +1,5 @@
 targetScope = 'subscription'
-param location string = northeurope
+param location string = 'northeurope'
 
 @description('String to make resource names unique')
 var resourceToken = uniqueString(subscription().subscriptionId, location)
