@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Vanilla JavaScript App</title>
+</head>
+
+<body>
+    <main>
+    <h1>Vanilla JavaScript App</h1>
+    <p>Loading content from the message API: <b id="name">...</b></p>
+    </main>
+
+    <div id="products">Loading surfboards products ...</div>
+    <div id="error"></div>
+    <div id="productContainer" class="product-grid"></div>
+
+    <script>
+    (async () => {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            const productContainer = document.getElementById('productContainer');
+
+            try {
+                loadingElement.textContent = 'Fetching surfboards products...';
+                const response = await fetch('/api/products');
+                if (!response.ok) {
+                    throw new Error(`<b>HTTP Error:</b> ${response.status}`);
+                }
+                const products = await response.json();
+                
+                // Hide loading element
+                loadingElement.style.display = 'none';
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';                    
+                    productCard.innerHTML = `
+                        <h3><b>${product.name}</b></h3>
+                        <p><b>Price:</b> €${product.price.toFixed(2)}</p>
+                        <p><b>Category:</b> ${product.category}</p>
+                        <p><b>Quantity:</b> ${product.quantity}</p>
+                        <p>${product.description.substring(0, 100)}...</p>
+                    `;
+                    productContainer.appendChild(productCard);
+                });
+            } catch (error) {
+                loadingElement.style.display = 'none';
+                errorElement.innerHTML = `<b>Error Loading Products:</b> ${error.message}`;
+                console.error('Product Fetch Error:', error);
+            }
+        })(); // Immediately Invoked Function Expression (IIFE)
+   
+    (async function() {
+        const { text } = await( await fetch(`/api/message`)).json();
+        document.querySelector('#name').textContent = text;
+    }());
+    </script>
+</body>
+</html>
