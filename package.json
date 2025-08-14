@@ -2,7 +2,7 @@
   "name": "vanilla-basic",
   "version": "1.0.0",
   "scripts": { 
-    "start": "sirv ./src public --cors --single --no-clear --port 8000"
+    "start": "sirv ./src/frontend public --cors --single --no-clear --port 8000"
   },
   "dependencies": {
     "@azure/functions": "4.7.3-beta.0"
@@ -10,5 +10,5 @@
   "devDependencies": {
     "@types/node": "^20.x"
   },
-  "main": "api/src/functions/*.js"
+  "main": "src/api/functions/*.js"
 }

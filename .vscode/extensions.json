@@ -3,6 +3,7 @@
     "ms-azuretools.vscode-azurefunctions",
     "ms-toolsai.jupyter",
     "ms-azuretools.vscode-azurestaticwebapps",
-    "1yib.nodejs-bundle"
+    "1yib.nodejs-bundle",
+    "humao.rest-client"
   ]
 }

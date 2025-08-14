@@ -3,8 +3,15 @@
 # Download at: https://aka.ms/vscode/rest-client
 ##################################################################
 
-@api_host = http://localhost:7071
+@api_host = http://localhost:8080
 
-### Generate an embedding from a text
-GET {{api_host}}/api/message
+###
+
+GET {{api_host}}/api/message HTTP/1.1
+Content-Type: application/json
+
+
+###
+
+GET {{api_host}}/api/products HTTP/1.1
 Content-Type: application/json
