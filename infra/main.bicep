@@ -1,28 +1,89 @@
-targetScope = 'subscription'
-param location string = 'northeurope'
+@description('Location for all resources')
+param location string = resourceGroup().location
 
-@description('String to make resource names unique')
-var resourceToken = uniqueString(subscription().subscriptionId, location)
+@description('Unique name for the application')
+param appName string = 'staticwebapp${uniqueString(resourceGroup().id)}'
 
-@description('Create a resource group')
-resource rg 'Microsoft.Resources/resourceGroups@2024-03-01' = {
-  name: 'rg-swa-app-${resourceToken}'
+// Cosmos DB Account
+resource cosmosDbAccount 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' = {
+  name: 'cosmos-${appName}'
   location: location
-}
-
-@description('Create a static web app')
-module swa 'br/public:avm/res/web/static-site:0.3.0' = {
-  name: 'client'
-  scope: rg
-  params: {
-    name: 'swa-${resourceToken}'
-    location: location
-    sku: 'Free'
+  kind: 'GlobalDocumentDB'
+  properties: {
+    databaseAccountOfferType: 'Standard'
+    locations: [
+      {
+        locationName: location
+        failoverPriority: 0
+        isZoneRedundant: false
+      }
+    ]
+    capabilities: [
+      {
+        name: 'EnableServerless'
+      }
+    ]
   }
 }
 
-@description('Output the default hostname')
-output endpoint string = swa.outputs.defaultHostname
+// Cosmos DB Database
+resource cosmosDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-04-15' = {
+  parent: cosmosDbAccount
+  name: 'MainDatabase'
+  properties: {
+    resource: {
+      id: 'MainDatabase'
+    }
+  }
+}
 
-@description('Output the static web app name')
-output staticWebAppName string = swa.outputs.name
+// Cosmos DB Container
+resource cosmosContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2023-04-15' = {
+  parent: cosmosDatabase
+  name: 'Items'
+  properties: {
+    resource: {
+      id: 'Items'
+      partitionKey: {
+        paths: [
+          '/id'
+        ]
+        kind: 'Hash'
+      }
+    }
+    options: {
+      throughput: 400
+    }
+  }
+}
+
+// Static Web App
+resource staticWebApp 'Microsoft.Web/staticSites@2022-03-01' = {
+  name: 'web-${appName}'
+  location: location
+  sku: {
+    name: 'Free'
+    tier: 'Free'
+  }
+  properties: {
+    repositoryUrl: ''
+    branch: ''
+    buildProperties: {
+      skipGithubActionWorkflowGeneration: true
+    }
+  }
+}
+
+// Cosmos DB Access Configuration
+resource staticWebAppSettings 'Microsoft.Web/staticSites/config@2022-03-01' = {
+  parent: staticWebApp
+  name: 'appsettings'
+  properties: {
+    COSMOS_ENDPOINT: cosmosDbAccount.properties.documentEndpoint
+    COSMOS_KEY: cosmosDbAccount.listKeys().primaryMasterKey
+  }
+}
+
+// Outputs
+output cosmosEndpoint string = cosmosDbAccount.properties.documentEndpoint
+output staticWebAppName string = staticWebApp.name
