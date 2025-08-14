@@ -1,2 +1,2 @@
 all:
-	swa start ./src/frontend --api-location ./src/api
+	swa start ./src/app --api-location ./src/api
