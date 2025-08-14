@@ -6,4 +6,4 @@ RUN curl -LsS https://aka.ms/InstallAzureCLIDeb | bash \
     && rm -rf /var/lib/apt/lists/*
 
 USER ${NB_UID}
-RUN pip install --no-cache-dir pyspark
+RUN pip install --no-cache-dir pyspark pandas numpy

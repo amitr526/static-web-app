@@ -1,0 +1,6 @@
+services:
+  notebook:
+    build: .
+    image: devnotebook
+    ports:
+      - "${PORT:-8888}:8888"
