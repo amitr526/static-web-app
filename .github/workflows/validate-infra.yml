@@ -24,7 +24,7 @@ jobs:
 
       - name: download bicep file
         run: |
-        bash -x infra/download.sh
+          bash -x infra/download.sh
       
       - name: Build Bicep for linting
         uses: azure/CLI@v2
